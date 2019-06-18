@@ -8,12 +8,12 @@ export const resolvers = {
 	},
 	Mutation: {
 		createUser: async (_, args) => {
-			const user = new User(args);
+			const user = new User(args.input);
 
 			await user.save();
 			return user;
 		},
-		updateUser: (_, args) => User.findOneAndUpdate({ _id: args.id }, args),
+		updateUser: (_, args) =>  User.findOneAndUpdate({ _id: args.id }, args.input, { useFindAndModify: false }),
 		deleteUser: async (_, args) => {
 			const res = await User.deleteOne({ _id: args.id })
 			console.log(res)
