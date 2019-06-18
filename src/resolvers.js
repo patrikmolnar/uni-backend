@@ -3,7 +3,8 @@ import { User } from './models/User'
 export const resolvers = {
 	Query: {
 		users: () => User.find(),
-		user: (_, args) => User.findById(args.id) 
+		user: (_, args) => User.findById(args.id),
+		userByType: (_, args) => User.find({ userType: args.userType }),
 	},
 	Mutation: {
 		createUser: async (_, args) => {
