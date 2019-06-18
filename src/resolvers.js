@@ -13,7 +13,7 @@ export const resolvers = {
 			await user.save();
 			return user;
 		},
-		updateUser: (_, args) =>  User.findOneAndUpdate({ _id: args.id }, args.input, { useFindAndModify: false }),
+		updateUser: (_, args) =>  User.findOneAndUpdate({ _id: args.id }, args.input),
 		deleteUser: async (_, args) => {
 			const res = await User.deleteOne({ _id: args.id })
 			console.log(res)
