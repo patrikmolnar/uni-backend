@@ -8,6 +8,8 @@ import { resolvers } from './resolvers'
 const startServer = async () => {
 	const app = express()
 
+	const PORT = process.env.PORT || 4000
+
 	const server = new ApolloServer({
 		typeDefs,
 		resolvers,
@@ -17,8 +19,8 @@ const startServer = async () => {
 
 	await mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true, useFindAndModify: false });
 	
-	app.listen({ port: process.env.PORT || 4000 }, () =>
-		console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+	app.listen({ port: PORT }, () =>
+		console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
 	)
 	
 }
