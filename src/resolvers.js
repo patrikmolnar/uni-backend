@@ -5,9 +5,24 @@ const jwt = require('jsonwebtoken')
 
 export const resolvers = {
 	Query: {
-		users: () => User.find(),
-		user: (_, args) => User.findById(args.id),
-		userByType: (_, args) => User.find({ userType: args.userType }),
+		users: (_, req) => {
+			if(!req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			return User.find()
+		},
+		user: (_, args, req) => {
+			if(!req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			return User.findById(args.id)
+		},
+		userByType: (_, args, req) => {
+			if(!req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			return User.find({ userType: args.userType })
+		},
 		login: async (_, args) => {
 			const user = await User.findOne({ email: args.email })
 			if(!user){
@@ -20,7 +35,7 @@ export const resolvers = {
 			const token = jwt.sign({
 				userId: user.id,
 				email: user.email
-			}, 'validateTokenKey', {
+			}, process.env.JWT_VALIDATOR_KEY, {
 				expiresIn: '1hr'
 			}) // change key to env variable
 			return { userId: user.id, token: token, tokenExpiration: 1 }
@@ -28,7 +43,6 @@ export const resolvers = {
 	},
 	Mutation: {
 		createUser: (_, args) => {
-
 			return User.findOne({ email: args.input.email }).then(user => {
 				if (user) {
 					throw new Error('User already exists!')
@@ -53,9 +67,17 @@ export const resolvers = {
 				throw err;
 			})
 		},
-
-		updateUser: (_, args) =>  User.findOneAndUpdate({ _id: args.id }, args.input),
-		deleteUser: async (_, args) => {
+		updateUser: (_, args, req) => {
+			if(!req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			return User.findOneAndUpdate({ _id: args.id }, args.input)
+		},
+		deleteUser: async (_, args, req) => {
+			if(!req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			
 			const res = await User.deleteOne({ _id: args.id })
 			if(res.deletedCount === 1){
 				return true
