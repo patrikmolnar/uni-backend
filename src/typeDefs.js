@@ -25,8 +25,8 @@ export const typeDefs = gql`
 	enum UserType {
 		ADMIN
 		STUDENT
-		TEACHER
-		INTERNAL
+		DEPARTMENT_STAFF
+		FINANCE_STAFF
 	}
 
 	input UserInput {
