@@ -5,12 +5,19 @@ export const typeDefs = gql`
 		users: [User]
 		user(id:ID!): User
 		userByType(userType: UserType): [User]
+		login(email: String!, password: String!): AuthData!
 	}
 
 	type Mutation {
 		createUser(input: UserInput): User
 		updateUser(id: ID!, input: UserInput): User
 		deleteUser(id: ID!): Boolean
+	}
+
+	type AuthData {
+		userId: ID!
+		token: String!
+		tokenExpiration: Int!
 	}
 
 	type User {

@@ -1,11 +1,30 @@
-import { User } from './models/User'
+import { User } from './models/user'
 import bcrypt from 'bcryptjs'
+
+const jwt = require('jsonwebtoken')
 
 export const resolvers = {
 	Query: {
 		users: () => User.find(),
 		user: (_, args) => User.findById(args.id),
 		userByType: (_, args) => User.find({ userType: args.userType }),
+		login: async (_, args) => {
+			const user = await User.findOne({ email: args.email })
+			if(!user){
+				throw new Error('User does not exist!');
+			}
+			const isEqual = await bcrypt.compare(args.password, user.password);
+			if(!isEqual){
+				throw new Error('Password is incorrect!'); // change error later to not give away direct hints 
+			}
+			const token = jwt.sign({
+				userId: user.id,
+				email: user.email
+			}, 'validateTokenKey', {
+				expiresIn: '1hr'
+			}) // change key to env variable
+			return { userId: user.id, token: token, tokenExpiration: 1 }
+		}
 	},
 	Mutation: {
 		createUser: (_, args) => {
