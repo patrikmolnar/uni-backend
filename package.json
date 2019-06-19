@@ -4,7 +4,8 @@
   "description": "Backend of Uni eSystem",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js"
+    "start": "nodemon --exec babel-node src/index.js",
+    "deploy": "now --public"
   },
   "keywords": [],
   "author": "",
