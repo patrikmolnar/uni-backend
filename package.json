@@ -8,7 +8,7 @@
     "deploy": "now --public"
   },
   "keywords": [],
-  "author": "",
+  "author": "Patrik Molnar",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.4.4",
