@@ -5,9 +5,13 @@ import { typeDefs } from './typeDefs'
 import { resolvers } from './resolvers'
 import dotenv from 'dotenv'
 
+const isAuth = require('./middleware/is-auth')
+
 const startServer = async () => {
 	dotenv.config()
 	const app = express()
+
+	app.use(isAuth)
 
 	const PORT = process.env.PORT
 
