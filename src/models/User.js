@@ -22,6 +22,10 @@ const userSchema = new Schema({
 	userType: {
 		type: String,
 		required: true
+	},
+	university: {
+		type: Schema.Types.ObjectId,
+		ref: 'University'
 	}
 });
 
