@@ -37,6 +37,6 @@ const universitySchema = new Schema({
 			ref: 'User'
 		}
 	]
-})
+}, { timestamps: true } )
 
 module.exports = mongoose.model('University', universitySchema);

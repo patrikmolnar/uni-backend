@@ -14,7 +14,14 @@ export const resolvers = {
 				throw new Error('Unauthenticated!')
 			}
 			const allUsers = await User.find()
-			return allUsers;
+			return allUsers.map(users => {
+				return {
+					...users._doc,
+					_id: users.id,
+					createdAt: new Date(users._doc.createdAt).toISOString(),
+					updatedAt: new Date(users._doc.createdAt).toISOString()
+				}
+			});
 		},
 		user: (_, args, context) => {
 			if(!context.req.isAuth) {
@@ -82,6 +89,8 @@ export const resolvers = {
 					...result._doc,
 					_id: result._doc._id,
 					password: null,
+					createdAt: new Date(result._doc.createdAt).toISOString(),
+					updatedAt: new Date(result._doc.updatedAt).toISOString(),
 					university: {
 						_id: result._doc.university._id
 					}

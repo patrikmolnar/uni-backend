@@ -34,6 +34,8 @@ export const typeDefs = gql`
 		email: String
 		country: String
 		users: [User!]
+		createdAt: String
+		updatedAt: String
 	}
 
 	type User {
@@ -44,6 +46,8 @@ export const typeDefs = gql`
 		password: String
 		userType: UserType
 		university: University
+		createdAt: String
+		updatedAt: String
 	}
 
 	enum UserType {
