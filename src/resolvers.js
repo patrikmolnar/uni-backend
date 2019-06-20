@@ -81,6 +81,7 @@ export const resolvers = {
 				createdUser = {
 					...result._doc,
 					_id: result._doc._id,
+					password: null,
 					university: {
 						_id: result._doc.university._id
 					}
@@ -153,7 +154,7 @@ export const resolvers = {
 
 			const user = await User.findOneAndUpdate({ _id: args._id }, updatedUser) 
 		
-			return { ...updatedUser, password: updatedUser.password, _id: args._id };
+			return { ...updatedUser, password: null, _id: args._id };
 		},
 		deleteUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
