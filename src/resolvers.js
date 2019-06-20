@@ -1,4 +1,5 @@
 import { User } from './models/user'
+import { University } from './models/university'
 import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
 
@@ -26,6 +27,13 @@ export const resolvers = {
 				throw new Error('Unauthenticated!')
 			}
 			return User.find({ userType: args.userType })
+		},
+		universities: async (_, args, context) => {
+			if(!context.req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			const allUnis = await University.find()
+			return allUnis;
 		},
 		login: async (_, args) => {
 			const user = await User.findOne({ email: args.email })
@@ -70,6 +78,41 @@ export const resolvers = {
 			.catch(err => {
 				throw err;
 			})
+		},
+		createUniversity: (_, args) => {
+			return University.findOne({ universityId: args.input.universityId }).then(uni => {
+				if(uni){
+					throw new Error('A University with this ID already exist!')
+				}
+				const university = new University({
+					universityId: args.input.universityId,
+					fullName: args.input.fullName,
+					shortName: args.input.shortName,
+					address: args.input.address,
+					website: args.input.website,
+					email: args.input.email,
+					country: args.input.country
+				});
+				return university.save();
+			})
+		},
+		updateUniversity: (_, args, context) => {
+			if(!context.req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			return University.findOneAndUpdate({ _id: args.id }, args.input)
+		},
+		deleteUniversity: async (_, args, context) => {
+			if(!context.req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+			
+			const res = await University.deleteOne({ _id: args.id })
+			if(res.deletedCount === 1){
+				return true
+			} else if(res.deletedCount === 0) { 
+				return false
+			}
 		},
 		updateUser: (_, args, context) => {
 			if(!context.req.isAuth) {
