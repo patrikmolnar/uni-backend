@@ -54,30 +54,53 @@ export const resolvers = {
 		}
 	},
 	Mutation: {
-		createUser: (_, args) => {
-			return User.findOne({ email: args.input.email }).then(user => {
-				if (user) {
-					throw new Error('User already exists!')
+		createUser: async (_, args) => {
+
+			const existingUser = await User.findOne({ email: args.input.email })
+
+			if (existingUser) {
+				throw new Error('User already exists!')
+			}
+
+			const hashedPassword = await bcrypt.hash(args.input.password, 12)
+			
+			const user = await new User({
+				email: args.input.email,
+				password: hashedPassword,
+				firstName: args.input.firstName,
+				lastName: args.input.lastName,
+				userType: args.input.userType,
+				university: '5d0b6e36cbe795c0608806ba'
+			});	
+
+			let createdUser;
+
+			try {
+				const result = await user.save()
+
+				createdUser = {
+					...result._doc,
+					_id: result._doc._id,
+					university: {
+						_id: result._doc.university._id
+					}
 				}
-				return bcrypt
-				.hash(args.input.password, 12)
-			})
-			.then(hashedPassword => {
-				const user = new User({
-					email: args.input.email,
-					password: hashedPassword,
-					firstName: args.input.firstName,
-					lastName: args.input.lastName,
-					userType: args.input.userType
-				});
-				return user.save();
-			})
-			.then(result => {
-				return { ...result._doc, password: null, id: result.id };
-			})
-			.catch(err => {
-				throw err;
-			})
+
+				const university = await University.findById('5d0b6e36cbe795c0608806ba');
+
+			if (!university) {
+				throw new Error('University not found.');
+			}
+
+			university.users.push(user)
+			await university.save();
+
+			return createdUser;
+
+			} catch (error) {
+				throw error;
+			}
+
 		},
 		createUniversity: (_, args) => {
 			return University.findOne({ universityId: args.input.universityId }).then(uni => {
@@ -100,14 +123,14 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			return University.findOneAndUpdate({ _id: args.id }, args.input)
+			return University.findOneAndUpdate({ _id: args._id }, args.input)
 		},
 		deleteUniversity: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			
-			const res = await University.deleteOne({ _id: args.id })
+			const res = await University.deleteOne({ _id: args._id })
 			if(res.deletedCount === 1){
 				return true
 			} else if(res.deletedCount === 0) { 
@@ -118,14 +141,14 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			return User.findOneAndUpdate({ _id: args.id }, args.input)
+			return User.findOneAndUpdate({ _id: args._id }, args.input)
 		},
 		deleteUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			
-			const res = await User.deleteOne({ _id: args.id })
+			const res = await User.deleteOne({ _id: args._id })
 			if(res.deletedCount === 1){
 				return true
 			} else if(res.deletedCount === 0) { 
