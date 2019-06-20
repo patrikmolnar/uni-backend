@@ -137,11 +137,23 @@ export const resolvers = {
 				return false
 			}
 		},
-		updateUser: (_, args, context) => {
+		updateUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			return User.findOneAndUpdate({ _id: args._id }, args.input)
+
+			let updatedUser;
+
+			const hashedPassword = await bcrypt.hash(args.input.password, 12)
+
+			updatedUser = {
+				...args.input,
+				password: hashedPassword
+			}
+
+			const user = await User.findOneAndUpdate({ _id: args._id }, updatedUser) 
+		
+			return { ...updatedUser, password: updatedUser.password, _id: args._id };
 		},
 		deleteUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
