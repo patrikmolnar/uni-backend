@@ -1,24 +1,28 @@
 import { User } from './models/user'
 import bcrypt from 'bcryptjs'
+import dotenv from 'dotenv'
 
 const jwt = require('jsonwebtoken')
 
+dotenv.config()
+
 export const resolvers = {
 	Query: {
-		users: (_, req) => {
-			if(!req.isAuth) {
+		users: async (_, args, context) => {
+			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			return User.find()
+			const allUsers = await User.find()
+			return allUsers;
 		},
-		user: (_, args, req) => {
-			if(!req.isAuth) {
+		user: (_, args, context) => {
+			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			return User.findById(args.id)
 		},
-		userByType: (_, args, req) => {
-			if(!req.isAuth) {
+		userByType: (_, args, context) => {
+			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			return User.find({ userType: args.userType })
@@ -67,14 +71,14 @@ export const resolvers = {
 				throw err;
 			})
 		},
-		updateUser: (_, args, req) => {
-			if(!req.isAuth) {
+		updateUser: (_, args, context) => {
+			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			return User.findOneAndUpdate({ _id: args.id }, args.input)
 		},
-		deleteUser: async (_, args, req) => {
-			if(!req.isAuth) {
+		deleteUser: async (_, args, context) => {
+			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			
