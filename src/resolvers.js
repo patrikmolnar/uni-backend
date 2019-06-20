@@ -1,11 +1,11 @@
-import { User } from './models/user'
-import { University } from './models/university'
-import bcrypt from 'bcryptjs'
-import dotenv from 'dotenv'
+const bcrypt = require('bcryptjs') 
+const env = require('dotenv')
 
+const User = require('./models/user')
+const University = require('./models/university')
+
+env.config()
 const jwt = require('jsonwebtoken')
-
-dotenv.config()
 
 export const resolvers = {
 	Query: {

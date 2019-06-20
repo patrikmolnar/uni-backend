@@ -1,14 +1,15 @@
-import { ApolloServer, gql } from 'apollo-server-express'
-import express from 'express'
-import mongoose from 'mongoose'
-import { typeDefs } from './typeDefs'
-import { resolvers } from './resolvers'
-import dotenv from 'dotenv'
+const env = require('dotenv')
+const { ApolloServer } = require('apollo-server-express')
+const { gql } = require('apollo-server-express')
+const { typeDefs } = require('./typeDefs')
+const { resolvers } = require('./resolvers')
+const express = require('express')
+const mongoose = require('mongoose');
 
+env.config()
 const isAuth = require('./middleware/is-auth')
 
 const startServer = async () => {
-	dotenv.config()
 	const app = express()
 	
 	app.use(isAuth)
