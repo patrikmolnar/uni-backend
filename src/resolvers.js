@@ -23,17 +23,19 @@ export const resolvers = {
 				}
 			});
 		},
-		user: (_, args, context) => {
+		user: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			return User.findById(args.id)
+			const oneUser = await User.findById(args._id)
+			return oneUser;
 		},
-		userByType: (_, args, context) => {
+		userByType: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			return User.find({ userType: args.userType })
+			const specificUser = await User.find({ userType: args.userType })
+			return specificUser;
 		},
 		universities: async (_, args, context) => {
 			if(!context.req.isAuth) {
