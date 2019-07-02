@@ -1,10 +1,9 @@
 const bcrypt = require('bcryptjs') 
-const env = require('dotenv')
+const env = require('dotenv').config()
 
 const User = require('./models/user')
 const University = require('./models/university')
 
-env.config()
 const jwt = require('jsonwebtoken')
 
 export const resolvers = {
