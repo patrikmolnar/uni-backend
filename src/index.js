@@ -39,14 +39,8 @@ const startServer = async () => {
 			startupTimeout: 3000
 		},
 	}, () => {
-		console.log('Listening...')
-	})
-
-	
-	// app.listen({ port: PORT }, () =>
-	// 	console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
-	// )
-	
+		console.log('Server started...')
+	})	
 }
 
 startServer();
