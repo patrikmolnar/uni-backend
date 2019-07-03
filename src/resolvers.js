@@ -83,15 +83,16 @@ export const resolvers = {
 			}
 			const isEqual = await bcrypt.compare(args.password, user.password);
 			if(!isEqual){
-				throw new Error('Password is incorrect!'); // change error later to not give away direct hints 
+				throw new Error('Incorrect login credentials!');
 			}
 			const token = jwt.sign({
 				userId: user.id,
-				email: user.email
+				email: user.email,
+				userType: user.userType,
 			}, process.env.JWT_VALIDATOR_KEY, {
 				expiresIn: '1hr'
-			}) // change key to env variable
-			return { userId: user.id, token: token, tokenExpiration: 1 }
+			})
+			return { userId: user.id, token: token, tokenExpiration: 1, userType: user.userType }
 		}
 	},
 
@@ -99,6 +100,9 @@ export const resolvers = {
 		createUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
+			}
+			if(context.req.userType !== 'ADMIN'){
+				throw new Error(`You don't have permissions to create users!`)
 			}
 
 			const existingUser = await User.findOne({ email: args.input.email })
@@ -155,6 +159,10 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
+			if(context.req.userType !== 'ADMIN'){
+				throw new Error(`You don't have permissions to create universities!`)
+			}
+
 
 			return University.findOne({ universityId: args.input.universityId }).then(uni => {
 				if(uni){
@@ -177,6 +185,10 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
+			if(context.req.userType !== 'ADMIN'){
+				throw new Error(`You don't have permissions to update universities!`)
+			}
+
 			return University.findOneAndUpdate({ _id: args._id }, args.input)
 		},
 		
@@ -184,6 +196,10 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
+			if(context.req.userType !== 'ADMIN'){
+				throw new Error(`You don't have permissions to delete!`)
+			}
+
 			
 			const res = await University.deleteOne({ _id: args._id })
 			if(res.deletedCount === 1){
@@ -197,6 +213,10 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
+			if(context.req.userType !== 'ADMIN'){
+				throw new Error(`You don't have permissions to update users!`)
+			}
+
 
 			let updatedUser;
 
@@ -216,6 +236,10 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
+			if(context.req.userType !== 'ADMIN'){
+				throw new Error(`You don't have permissions to delete users!`)
+			}
+
 			
 			const res = await User.deleteOne({ _id: args._id })
 			if(res.deletedCount === 1){
