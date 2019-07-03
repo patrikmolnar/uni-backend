@@ -6,6 +6,10 @@ const University = require('../../models/university')
 
 const jwt = require('jsonwebtoken')
 
+const formatDate = value => {
+	return new Date(value).toLocaleString()
+}
+
 const users = userIds => {
 	return User.find({ _id: { $in: userIds } })
 	.then(users => {
@@ -41,8 +45,8 @@ export const resolvers = {
 					...users._doc,
 					_id: users.id,
 					university: university.bind(this, users._doc.university),
-					createdAt: new Date(users._doc.createdAt).toISOString(),
-					updatedAt: new Date(users._doc.createdAt).toISOString()
+					createdAt: formatDate.bind(this, users._doc.createdAt),
+					updatedAt: formatDate.bind(this, users._doc.createdAt)
 				}
 			});
 		},
@@ -132,8 +136,8 @@ export const resolvers = {
 					...result._doc,
 					_id: result._doc._id,
 					password: null,
-					createdAt: new Date(result._doc.createdAt).toISOString(),
-					updatedAt: new Date(result._doc.updatedAt).toISOString(),
+					createdAt: formatDate.bind(this, result._doc.createdAt),
+					updatedAt: formatDate.bind(this, result._doc.updatedAt),
 					university: {
 						_id: result._doc.university._id
 					}
