@@ -6,6 +6,28 @@ const University = require('./models/university')
 
 const jwt = require('jsonwebtoken')
 
+const users = userIds => {
+	return User.find({ _id: { $in: userIds } })
+	.then(users => {
+		return users.map(user => {
+			return { ...user._doc, _id: user.id, university: university.bind(this, user._doc.university) }
+		})
+	})
+	.catch(err => {
+		throw err;
+	})
+}
+
+const university = uniId => {
+	return University.findById(uniId)
+	.then(uni => {
+		return { ...uni._doc, _id: uni.id, users: users.bind(this, uni._doc.users) }
+	})
+	.catch(err => {
+		throw err;
+	})
+}
+
 export const resolvers = {
 	Query: {
 		users: async (_, args, context) => {
@@ -17,11 +39,13 @@ export const resolvers = {
 				return {
 					...users._doc,
 					_id: users.id,
+					university: university.bind(this, users._doc.university),
 					createdAt: new Date(users._doc.createdAt).toISOString(),
 					updatedAt: new Date(users._doc.createdAt).toISOString()
 				}
 			});
 		},
+
 		user: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
@@ -29,6 +53,7 @@ export const resolvers = {
 			const oneUser = await User.findById(args._id)
 			return oneUser;
 		},
+
 		userByType: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
@@ -36,13 +61,21 @@ export const resolvers = {
 			const specificUser = await User.find({ userType: args.userType })
 			return specificUser;
 		},
+
 		universities: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			const allUnis = await University.find()
-			return allUnis;
+			return allUnis.map(uni => {
+				return {
+					...uni._doc,
+					_id: uni.id,
+					users: users.bind(this, uni._doc.users)
+				}
+			})
 		},
+
 		login: async (_, args) => {
 			const user = await User.findOne({ email: args.email })
 			if(!user){
@@ -61,6 +94,7 @@ export const resolvers = {
 			return { userId: user.id, token: token, tokenExpiration: 1 }
 		}
 	},
+
 	Mutation: {
 		createUser: async (_, args) => {
 
@@ -113,6 +147,7 @@ export const resolvers = {
 			}
 
 		},
+
 		createUniversity: (_, args) => {
 			return University.findOne({ universityId: args.input.universityId }).then(uni => {
 				if(uni){
@@ -130,12 +165,14 @@ export const resolvers = {
 				return university.save();
 			})
 		},
+
 		updateUniversity: (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
 			return University.findOneAndUpdate({ _id: args._id }, args.input)
 		},
+		
 		deleteUniversity: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
@@ -148,6 +185,7 @@ export const resolvers = {
 				return false
 			}
 		},
+
 		updateUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
@@ -166,6 +204,7 @@ export const resolvers = {
 		
 			return { ...updatedUser, password: null, _id: args._id };
 		},
+
 		deleteUser: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
