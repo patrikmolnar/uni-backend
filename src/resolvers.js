@@ -96,7 +96,10 @@ export const resolvers = {
 	},
 
 	Mutation: {
-		createUser: async (_, args) => {
+		createUser: async (_, args, context) => {
+			if(!context.req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
 
 			const existingUser = await User.findOne({ email: args.input.email })
 
@@ -148,7 +151,11 @@ export const resolvers = {
 
 		},
 
-		createUniversity: (_, args) => {
+		createUniversity: (_, args, context) => {
+			if(!context.req.isAuth) {
+				throw new Error('Unauthenticated!')
+			}
+
 			return University.findOne({ universityId: args.input.universityId }).then(uni => {
 				if(uni){
 					throw new Error('A University with this ID already exist!')
