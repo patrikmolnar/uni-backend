@@ -136,7 +136,7 @@ export const resolvers = {
 
 		},
 
-		createUniversity: (_, args, context) => {
+		createUniversity: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
@@ -144,11 +144,14 @@ export const resolvers = {
 				throw new Error(`You don't have permissions to create universities!`)
 			}
 
-			return University.findOne({ universityId: args.input.universityId }).then(uni => {
+			try {
+				const uni = await University.findOne({ universityId: args.input.universityId })
+
 				if(uni){
 					throw new Error('A University with this ID already exist!')
 				}
-				const university = new University({
+
+				const university = await new University({
 					universityId: args.input.universityId,
 					fullName: args.input.fullName,
 					shortName: args.input.shortName,
@@ -157,8 +160,14 @@ export const resolvers = {
 					email: args.input.email,
 					country: args.input.country
 				});
-				return university.save();
-			})
+
+				await university.save();
+
+				return university
+			} 
+			catch (err) {
+				throw err;
+			}
 		},
 
 		updateUniversity: (_, args, context) => {
