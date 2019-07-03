@@ -6,7 +6,11 @@ const University = require('../../models/university')
 
 const jwt = require('jsonwebtoken')
 
-const { formatDate, users, university } = require('../../utils/utils')
+const { 
+	formatDate, 
+	users, 
+	includeNestedUniversity 
+} = require('../../utils/utils')
 
 
 export const resolvers = {
@@ -17,13 +21,7 @@ export const resolvers = {
 			}
 			const allUsers = await User.find()
 			return allUsers.map(users => {
-				return {
-					...users._doc,
-					_id: users.id,
-					university: university.bind(this, users._doc.university),
-					createdAt: formatDate.bind(this, users._doc.createdAt),
-					updatedAt: formatDate.bind(this, users._doc.createdAt)
-				}
+				return includeNestedUniversity(users)
 			});
 		},
 
@@ -32,13 +30,7 @@ export const resolvers = {
 				throw new Error('Unauthenticated!')
 			}
 			const user = await User.findById(args._id)
-			return {
-				...user._doc,
-				_id: user.id,
-				university: university.bind(this, user._doc.university),
-				createdAt: formatDate.bind(this, user._doc.createdAt),
-				updatedAt: formatDate.bind(this, user._doc.createdAt)
-			};
+			return includeNestedUniversity(user)
 		},
 
 		userByType: async (_, args, context) => {
@@ -47,13 +39,7 @@ export const resolvers = {
 			}
 			const users = await User.find({ userType: args.userType })
 			return users.map(user => {
-				return {
-					...user._doc,
-					_id: user.id,
-					university: university.bind(this, user._doc.university),
-					createdAt: formatDate.bind(this, user._doc.createdAt),
-					updatedAt: formatDate.bind(this, user._doc.createdAt)
-				};
+				return includeNestedUniversity(user)
 			})
 		},
 
@@ -157,7 +143,6 @@ export const resolvers = {
 			if(context.req.userType !== 'ADMIN'){
 				throw new Error(`You don't have permissions to create universities!`)
 			}
-
 
 			return University.findOne({ universityId: args.input.universityId }).then(uni => {
 				if(uni){

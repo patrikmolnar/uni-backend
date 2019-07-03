@@ -5,6 +5,16 @@ const formatDate = value => {
 	return new Date(value).toLocaleString()
 }
 
+const includeNestedUniversity = value => {
+	return {
+		...value._doc,
+		_id: value.id,
+		university: university.bind(this, value._doc.university),
+		createdAt: formatDate.bind(this, value._doc.createdAt),
+		updatedAt: formatDate.bind(this, value._doc.createdAt)
+	}
+}
+
 const users = async userIds => {
 	try {
 		const users = await User.find({ _id: { $in: userIds } })
@@ -41,3 +51,4 @@ const university = async uniId => {
 exports.formatDate = formatDate;
 exports.users = users;
 exports.university = university;
+exports.includeNestedUniversity = includeNestedUniversity;
