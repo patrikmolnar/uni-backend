@@ -4,10 +4,11 @@
   "description": "Backend of Uni eSystem",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js"
+    "start": "nodemon --exec babel-node src/index.js",
+    "deploy": "now --public"
   },
   "keywords": [],
-  "author": "",
+  "author": "Patrik Molnar",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.4.4",
@@ -17,10 +18,14 @@
     "nodemon": "^1.19.1"
   },
   "dependencies": {
+    "apollo-engine": "^1.1.2",
+    "apollo-server": "^2.6.3",
     "apollo-server-express": "^2.6.3",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "graphql": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.6.0"
   }
 }
