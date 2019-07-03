@@ -31,16 +31,30 @@ export const resolvers = {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			const oneUser = await User.findById(args._id)
-			return oneUser;
+			const user = await User.findById(args._id)
+			return {
+				...user._doc,
+				_id: user.id,
+				university: university.bind(this, user._doc.university),
+				createdAt: formatDate.bind(this, user._doc.createdAt),
+				updatedAt: formatDate.bind(this, user._doc.createdAt)
+			};
 		},
 
 		userByType: async (_, args, context) => {
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
-			const specificUser = await User.find({ userType: args.userType })
-			return specificUser;
+			const users = await User.find({ userType: args.userType })
+			return users.map(user => {
+				return {
+					...user._doc,
+					_id: user.id,
+					university: university.bind(this, user._doc.university),
+					createdAt: formatDate.bind(this, user._doc.createdAt),
+					updatedAt: formatDate.bind(this, user._doc.createdAt)
+				};
+			})
 		},
 
 		universities: async (_, args, context) => {
