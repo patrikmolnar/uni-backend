@@ -2,8 +2,8 @@ const env = require('dotenv').config()
 const { ApolloServer } = require('apollo-server-express')
 const { ApolloEngine } = require('apollo-engine')
 const { gql } = require('apollo-server-express')
-const { typeDefs } = require('./typeDefs')
-const { resolvers } = require('./resolvers')
+const { typeDefs } = require('./graphql/schema/typeDefs')
+const { resolvers } = require('./graphql/resolvers/resolvers')
 const express = require('express')
 const mongoose = require('mongoose');
 
@@ -24,7 +24,7 @@ const startServer = async () => {
 		tracing: true,
 		cacheControl: true,
 		engine: false,
-		context: (isAuth) => (isAuth),
+		context: ({ req, res }) => ({ req, res }),
 	});
 
 	server.applyMiddleware({ app });

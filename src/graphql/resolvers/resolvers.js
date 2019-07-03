@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs') 
 const env = require('dotenv').config()
 
-const User = require('./models/user')
-const University = require('./models/university')
+const User = require('../../models/user')
+const University = require('../../models/university')
 
 const jwt = require('jsonwebtoken')
 
@@ -31,6 +31,7 @@ const university = uniId => {
 export const resolvers = {
 	Query: {
 		users: async (_, args, context) => {
+			console.log(context)
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
