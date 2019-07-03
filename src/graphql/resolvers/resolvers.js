@@ -6,36 +6,12 @@ const University = require('../../models/university')
 
 const jwt = require('jsonwebtoken')
 
-const formatDate = value => {
-	return new Date(value).toLocaleString()
-}
+const { formatDate, users, university } = require('../../utils/utils')
 
-const users = userIds => {
-	return User.find({ _id: { $in: userIds } })
-	.then(users => {
-		return users.map(user => {
-			return { ...user._doc, _id: user.id, university: university.bind(this, user._doc.university) }
-		})
-	})
-	.catch(err => {
-		throw err;
-	})
-}
-
-const university = uniId => {
-	return University.findById(uniId)
-	.then(uni => {
-		return { ...uni._doc, _id: uni.id, users: users.bind(this, uni._doc.users) }
-	})
-	.catch(err => {
-		throw err;
-	})
-}
 
 export const resolvers = {
 	Query: {
 		users: async (_, args, context) => {
-			console.log(context)
 			if(!context.req.isAuth) {
 				throw new Error('Unauthenticated!')
 			}
