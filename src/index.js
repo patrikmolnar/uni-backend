@@ -1,7 +1,5 @@
 const env = require('dotenv').config()
-const { ApolloServer } = require('apollo-server-express')
-const { ApolloEngine } = require('apollo-engine')
-const { gql } = require('apollo-server-express')
+const { ApolloServer, gql } = require('apollo-server-express')
 const { typeDefs } = require('./graphql/schema/typeDefs')
 const { resolvers } = require('./graphql/resolvers/resolvers')
 const express = require('express')
@@ -11,36 +9,25 @@ const isAuth = require('./middleware/is-auth')
 
 const startServer = async () => {
 	const app = express()
+
+	const PORT = process.env.PORT
 	
 	app.use(isAuth)
 
-	const engine = new ApolloEngine({
-		apiKey: process.env.ENGINE_API_KEY
-	})
+	await mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@${process.env.CLUSTER}/${process.env.DBNAME}`, { useNewUrlParser: true, useFindAndModify: false });
 
 	const server = new ApolloServer({
 		typeDefs,
 		resolvers,
-		tracing: true,
-		cacheControl: true,
-		engine: false,
 		context: ({ req, res }) => ({ req, res }),
 	});
 
 	server.applyMiddleware({ app });
 
-	await mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@${process.env.CLUSTER}/${process.env.DBNAME}`, { useNewUrlParser: true, useFindAndModify: false });
+	app.listen({ port: PORT }, () =>
+		console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+	)
 
-	engine.listen({
-		port: process.env.PORT,
-		graphqlPaths: ['/graphql'],
-		expressApp: app,
-		launcherOptions: {
-			startupTimeout: 3000
-		},
-	}, () => {
-		console.log('Server started...')
-	})	
 }
 
 startServer();
