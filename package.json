@@ -1,6 +1,6 @@
 {
   "name": "uni-backend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Backend of Uni eSystem",
   "main": "index.js",
   "scripts": {
